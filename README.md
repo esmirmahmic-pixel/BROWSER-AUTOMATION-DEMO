@@ -22,6 +22,10 @@ python -m pytest -v -ra
 
 After running, inspect `test-results/summary.json`, `test-results/browser-runs.sqlite3`, and `test-results/results.xml` (the XML file is produced by CI, or locally when using `--junitxml=test-results/results.xml`).
 
+## Public dashboard
+
+The GitHub Pages deployment workflow publishes a dashboard only after browser tests pass and a real JSON report is verified. When GitHub Pages is enabled, the intended URL is https://esmirmahmic-pixel.github.io/BROWSER-AUTOMATION-DEMO/ . Check the latest Actions run for deployment success; a configured URL alone does not prove the page is live.
+
 ## CI evidence
 
 Open the **Actions** tab and select the latest **Browser automation tests** run. Its **browser-test-results** artifact contains the actual test reports, including failures. A successful code commit does **not** mean the CI tests passed; verify the run conclusion.
@@ -32,6 +36,5 @@ No passwords, API tokens, or real customer data are used. This repository is ind
 
 ## Next milestones
 
-- Verify the retry demonstration in GitHub Actions
-- Simple dashboard reading JSON results
-- Secure, separate deployment plan for the PythonAnywhere site
+- Confirm public GitHub Pages deployment and verify its rendered dashboard
+- Improve portfolio documentation with verified CI evidence
