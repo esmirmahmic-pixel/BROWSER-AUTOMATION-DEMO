@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "total": 0,
+  "passed": 0,
+  "failed": 0,
+  "success_rate": 0,
+  "average_duration_ms": 0,
+  "pytest_exit_code": 1,
+  "generated_at": null,
+  "note": "Placeholder only; not a verified test run."
+}
