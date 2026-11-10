@@ -16,8 +16,8 @@ def main():
     for key in ("total", "passed", "failed", "pytest_exit_code"):
         if not isinstance(data.get(key), int) or isinstance(data[key], bool):
             raise SystemExit(f"Invalid CI summary: {key}")
-    if data["total"] < 0 or data["passed"] < 0 or data["failed"] < 0:
-        raise SystemExit("Invalid negative test counts")
+    if data["total"] <= 0 or data["passed"] < 0 or data["failed"] < 0:
+        raise SystemExit("No valid completed test results to publish")
     if data["passed"] + data["failed"] != data["total"]:
         raise SystemExit("Inconsistent test counts")
     DEST.mkdir(parents=True, exist_ok=True)
