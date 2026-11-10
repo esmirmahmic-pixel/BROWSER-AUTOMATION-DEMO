@@ -24,6 +24,21 @@ jobs:
         run: python -m playwright install --with-deps chromium
       - name: Run browser tests
         run: python -m pytest -v -ra --junitxml=test-results/results.xml
+      - name: Build dashboard from actual test results
+        if: always()
+        run: |
+          if [ -f test-results/summary.json ]; then
+            python -m automation.build_dashboard
+          else
+            echo "No pytest summary produced; dashboard will not be generated"
+          fi
+      - name: Upload dashboard preview
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-dashboard-preview
+          path: test-results/dashboard/
+          if-no-files-found: ignore
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
