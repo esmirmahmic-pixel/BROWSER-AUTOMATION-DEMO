@@ -6,6 +6,7 @@ An experimental Python/Playwright portfolio project demonstrating browser automa
 - Controlled local HTML form (no third-party scraping or credentials)
 - Chromium automation: successful submission and required-field validation
 - SQLite-backed pytest run history, including failed test details
+- Bounded retries for temporary timeouts, with no retry on unrelated errors
 - JSON summary of executed tests
 - GitHub Actions execution with downloadable test artifacts
 
@@ -31,6 +32,6 @@ No passwords, API tokens, or real customer data are used. This repository is ind
 
 ## Next milestones
 
-- Controlled timeout and retry demonstration
+- Verify the retry demonstration in GitHub Actions
 - Simple dashboard reading JSON results
 - Secure, separate deployment plan for the PythonAnywhere site
