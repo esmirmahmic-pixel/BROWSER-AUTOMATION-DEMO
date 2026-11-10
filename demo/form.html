@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Automation Test Form</title></head>
+<body>
+<h1>Demo Request Form</h1>
+<form id="request-form">
+  <label>Name <input name="name" id="name" required></label>
+  <label>Task <select id="task" name="task"><option value="report">Generate report</option><option value="check">Check status</option></select></label>
+  <button type="submit">Submit request</button>
+</form>
+<p id="result" role="status"></p>
+<script>
+document.getElementById('request-form').addEventListener('submit', function (event) {
+  event.preventDefault();
+  const name = document.getElementById('name').value.trim();
+  const task = document.getElementById('task').value;
+  document.getElementById('result').textContent = 'Request accepted: ' + name + ' / ' + task;
+});
+</script>
+</body>
+</html>
