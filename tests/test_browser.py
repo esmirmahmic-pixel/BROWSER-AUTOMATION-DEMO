@@ -1,14 +1,14 @@
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
-PAGE = (Path(__file__).resolve().parents[1] / "demo" / "form.html").as_uri()
+HTML = (Path(__file__).resolve().parents[1] / "demo" / "form.html").read_text(encoding="utf-8")
 
 def test_form_submission():
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=True)
         try:
             page = browser.new_page()
-            page.goto(PAGE)
+            page.set_content(HTML)
             page.get_by_label("Name").fill("Demo User")
             page.get_by_label("Task").select_option("report")
             page.get_by_role("button", name="Submit request").click()
@@ -21,7 +21,7 @@ def test_required_field_validation():
         browser = playwright.chromium.launch(headless=True)
         try:
             page = browser.new_page()
-            page.goto(PAGE)
+            page.set_content(HTML)
             page.get_by_role("button", name="Submit request").click()
             assert page.locator("#name").evaluate("(el) => el.validity.valueMissing")
             assert page.get_by_role("status").inner_text() == ""
