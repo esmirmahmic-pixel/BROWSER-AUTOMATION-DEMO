@@ -5,6 +5,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-24.04
@@ -46,3 +49,45 @@ jobs:
           name: browser-test-results
           path: test-results/
           if-no-files-found: ignore
+
+  publish:
+    name: Publish verified dashboard to GitHub Pages
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: test
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download verified dashboard bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: browser-dashboard-preview
+          path: public
+      - name: Verify dashboard files
+        run: |
+          test -s public/index.html
+          test -s public/summary.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path("public/summary.json").read_text())
+          assert data["pytest_exit_code"] == 0
+          assert data["total"] > 0
+          assert data["passed"] == data["total"]
+          assert data["failed"] == 0
+          print("Verified test report:", data["total"], "passed")
+          PY
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
