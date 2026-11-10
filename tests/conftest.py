@@ -23,7 +23,7 @@ def pytest_runtest_logreport(report):
         return
     if report.when == "setup" and report.passed:
         return
-    if report.when == "call" and report.skipped:
+    if report.skipped:
         return
     status = "passed" if report.passed else "failed"
     error = str(report.longrepr)[:2000] if report.failed else None
