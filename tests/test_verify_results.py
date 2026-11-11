@@ -23,7 +23,8 @@ def test_matching_reports_are_accepted(tmp_path):
     {"tests":3},{"failures":1},{"errors":1},{"skipped":1},{"passed":1}
 ])
 def test_mismatch_or_non_success_rejected(tmp_path,change):
-    passed=change.pop("passed",2) if "passed" in change else 2
-    summary,junit=make_reports(tmp_path,passed=passed,**change)
+    params=dict(change)
+    passed=params.pop("passed",2)
+    summary,junit=make_reports(tmp_path,passed=passed,**params)
     with pytest.raises(ValueError):
         verify(summary,junit)
