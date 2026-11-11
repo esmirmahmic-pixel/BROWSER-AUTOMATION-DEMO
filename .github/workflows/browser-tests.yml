@@ -20,11 +20,11 @@ jobs:
         with:
           python-version: '3.11'
       - name: Check Python syntax
-        run: python -m compileall -q automation tests
+        run: python -m compileall -q automation business_v4 tests
       - name: Install dependencies
         run: python -m pip install -r requirements-dev.txt
       - name: Lint Python code
-        run: python -m ruff check --select E4,E9,F automation tests
+        run: python -m ruff check --select E4,E9,F automation business_v4 tests
       - name: Audit dependencies
         run: python -m pip_audit -r requirements.txt
       - name: Install Chromium
