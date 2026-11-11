@@ -1,51 +1,7 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Browser Automation | Test Results</title>
-<style>
-:root{font-family:system-ui,sans-serif;color-scheme:light;background:#f4f6fa;color:#182235}
-body{max-width:850px;margin:3rem auto;padding:0 1rem}
-header{margin-bottom:2rem}h1{margin-bottom:.3rem}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem}
-article{background:white;border:1px solid #dfe5ef;border-radius:14px;padding:1.2rem}
-.value{font-size:2rem;font-weight:750;margin:.5rem 0}
-small{color:#526079}pre{white-space:pre-wrap;overflow-wrap:anywhere}
-#notice{margin-top:1.5rem}
-</style>
-</head>
-<body>
-<header><h1>Browser Automation Demo</h1><p>Automated Playwright test reporting</p></header>
-<section class="grid" aria-label="Test statistics">
-<article><small>Total tests</small><p class="value" id="total">—</p></article>
-<article><small>Passed</small><p class="value" id="passed">—</p></article>
-<article><small>Failed</small><p class="value" id="failed">—</p></article>
-<article><small>Success rate</small><p class="value" id="rate">—</p></article>
-</section>
-<article id="notice" role="status">Loading report…</article>
-<p><small>Data source: published CI summary. This page does not execute tests or show live server status.</small></p>
-<script>
-(async()=>{
- const status=document.getElementById('notice');
- try{
-   const response=await fetch('./summary.json',{cache:'no-store'});
-   if(!response.ok)throw new Error('Report not published (HTTP '+response.status+')');
-   const data=await response.json();
-   if(!Number.isInteger(data.total)||!Number.isInteger(data.passed)||!Number.isInteger(data.failed)||
-      data.total<0||data.passed<0||data.failed<0||data.passed+data.failed!==data.total)
-      throw new Error('Invalid report format');
-   document.getElementById('total').textContent=data.total;
-   document.getElementById('passed').textContent=data.passed;
-   document.getElementById('failed').textContent=data.failed;
-   document.getElementById('rate').textContent=data.total?
-      (100*data.passed/data.total).toFixed(1)+'%':'N/A';
-   status.textContent='Latest published CI result: '+(data.pytest_exit_code===0?'passed':'failed')+
-      ' · Generated: '+(data.generated_at||'timestamp unavailable');
- }catch(error){
-   status.textContent='No verified CI report available: '+error.message;
- }
-})();
-</script>
-</body>
-</html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Browser Automation | Verified Test Results</title>
+<style>:root{font-family:system-ui,sans-serif;color-scheme:light;background:#f4f6fa;color:#182235}body{max-width:850px;margin:3rem auto;padding:0 1rem}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem}article{background:white;border:1px solid #dfe5ef;border-radius:14px;padding:1.2rem}.value{font-size:2rem;font-weight:750;margin:.5rem 0}small{color:#526079}#notice{margin-top:1.5rem}</style></head>
+<body><h1>Browser Automation Demo</h1><p>Verified automated test reporting</p><section class="grid" aria-label="Test statistics">
+<article><small>Total tests</small><p class="value" id="total">—</p></article><article><small>Passed</small><p class="value" id="passed">—</p></article><article><small>Failed</small><p class="value" id="failed">—</p></article><article><small>Skipped</small><p class="value" id="skipped">—</p></article><article><small>Completed success rate</small><p class="value" id="rate">—</p></article></section>
+<article id="notice" role="status">Loading report…</article><p><small>Snapshot of published CI tests, not live monitoring. Skipped tests are excluded from the completion rate.</small></p>
+<script>(async()=>{const status=document.getElementById('notice');try{const r=await fetch('./summary.json',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const d=await r.json();if(d.schema_version!==2||![d.total,d.passed,d.failed,d.skipped,d.pytest_exit_code].every(Number.isInteger)||[d.total,d.passed,d.failed,d.skipped].some(v=>v<0)||d.total<1||d.passed+d.failed+d.skipped!==d.total||d.pytest_exit_code!==0||d.failed!==0||d.skipped!==0)throw Error('Invalid or incomplete CI report');for(const k of ['total','passed','failed','skipped'])document.getElementById(k).textContent=d[k];const completed=d.passed+d.failed;document.getElementById('rate').textContent=completed?(100*d.passed/completed).toFixed(1)+'%':'N/A';status.textContent='Verified CI snapshot · Generated: '+(d.generated_at||'unknown')}catch(e){status.textContent='No verified CI report available: '+e.message}})();</script></body></html>
