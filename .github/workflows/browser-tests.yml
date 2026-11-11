@@ -33,8 +33,7 @@ jobs:
         run: python -m pytest -v -ra --junitxml=test-results/results.xml
       - name: Verify JSON and JUnit test counts agree
         run: python -m automation.verify_results
-      - name: Build dashboard from actual test results
-        if: always()
+      - name: Build dashboard only after verified successful tests
         run: |
           python -m automation.build_dashboard
       - name: Upload dashboard preview
