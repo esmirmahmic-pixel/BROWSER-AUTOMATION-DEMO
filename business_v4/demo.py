@@ -2,7 +2,6 @@
 import argparse
 import json
 from pathlib import Path
-from tempfile import TemporaryDirectory
 
 from business_v4.dashboard import build
 from business_v4.orders import connect, create_order
