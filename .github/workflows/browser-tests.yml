@@ -20,9 +20,13 @@ jobs:
         with:
           python-version: '3.11'
       - name: Check Python syntax
-        run: python -m compileall -q tests
+        run: python -m compileall -q automation tests
       - name: Install dependencies
-        run: python -m pip install -r requirements.txt
+        run: python -m pip install -r requirements-dev.txt
+      - name: Lint Python code
+        run: python -m ruff check automation tests
+      - name: Audit dependencies
+        run: python -m pip_audit -r requirements.txt
       - name: Install Chromium
         run: python -m playwright install --with-deps chromium
       - name: Run browser tests
@@ -30,11 +34,7 @@ jobs:
       - name: Build dashboard from actual test results
         if: always()
         run: |
-          if [ -f test-results/summary.json ]; then
-            python -m automation.build_dashboard
-          else
-            echo "No pytest summary produced; dashboard will not be generated"
-          fi
+          python -m automation.build_dashboard
       - name: Upload dashboard preview
         if: always()
         uses: actions/upload-artifact@v4
@@ -76,7 +76,9 @@ jobs:
           import json
           from pathlib import Path
           data = json.loads(Path("public/summary.json").read_text())
+          assert data["schema_version"] == 2
           assert data["pytest_exit_code"] == 0
+          assert data["skipped"] == 0
           assert data["total"] > 0
           assert data["passed"] == data["total"]
           assert data["failed"] == 0
