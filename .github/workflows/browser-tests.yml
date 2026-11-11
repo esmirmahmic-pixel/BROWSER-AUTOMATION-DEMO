@@ -20,11 +20,11 @@ jobs:
         with:
           python-version: '3.11'
       - name: Check Python syntax
-        run: python -m compileall -q automation tests
+        run: python -m compileall -q automation business_v4 tests
       - name: Install dependencies
         run: python -m pip install -r requirements-dev.txt
       - name: Lint Python code
-        run: python -m ruff check --select E4,E9,F automation tests
+        run: python -m ruff check --select E4,E9,F automation business_v4 tests
       - name: Audit dependencies
         run: python -m pip_audit -r requirements.txt
       - name: Install Chromium
@@ -36,6 +36,24 @@ jobs:
       - name: Build dashboard only after verified successful tests
         run: |
           python -m automation.build_dashboard
+      - name: Build V4 synthetic public demo preview
+        run: |
+          python -m business_v4.demo --output test-results/v4-demo
+          mkdir -p test-results/dashboard/v4
+          cp test-results/v4-demo/dashboard/index.html test-results/dashboard/v4/index.html
+          cp test-results/v4-demo/dashboard/summary.json test-results/dashboard/v4/summary.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("test-results/dashboard/v4")
+          data = json.loads((root / "summary.json").read_text(encoding="utf-8"))
+          assert data["demo_only"] is True
+          assert data["counts"] == {"total": 3, "pending": 0, "completed": 3, "failed": 0}
+          assert all(item["id"].startswith("DEMO-") for item in data["recent_orders"])
+          assert len(data["recent_orders"]) == 3
+          assert (root / "index.html").stat().st_size > 0
+          print("V4 synthetic preview verified")
+          PY
       - name: Upload dashboard preview
         if: always()
         uses: actions/upload-artifact@v4
@@ -84,6 +102,19 @@ jobs:
           assert data["passed"] == data["total"]
           assert data["failed"] == 0
           print("Verified test report:", data["total"], "passed")
+          PY
+      - name: Verify V4 demo bundle before publication
+        run: |
+          test -s public/v4/index.html
+          test -s public/v4/summary.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path("public/v4/summary.json").read_text())
+          assert data["demo_only"] is True
+          assert data["counts"] == {"total": 3, "pending": 0, "completed": 3, "failed": 0}
+          assert len(data["recent_orders"]) == 3
+          print("V4 synthetic public demo verified")
           PY
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
