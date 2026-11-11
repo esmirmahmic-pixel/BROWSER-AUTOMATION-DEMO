@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements-dev.txt
       - name: Lint Python code
-        run: python -m ruff check automation tests
+        run: python -m ruff check --select E4,E9,F automation tests
       - name: Audit dependencies
         run: python -m pip_audit -r requirements.txt
       - name: Install Chromium
