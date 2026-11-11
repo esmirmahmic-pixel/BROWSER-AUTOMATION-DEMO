@@ -31,6 +31,8 @@ jobs:
         run: python -m playwright install --with-deps chromium
       - name: Run browser tests
         run: python -m pytest -v -ra --junitxml=test-results/results.xml
+      - name: Verify JSON and JUnit test counts agree
+        run: python -m automation.verify_results
       - name: Build dashboard from actual test results
         if: always()
         run: |
