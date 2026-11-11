@@ -1,8 +1,6 @@
 """Bounded local order worker. Processes synthetic demo orders only."""
 import argparse
 import json
-import sqlite3
-import time
 from pathlib import Path
 
 from business_v4.orders import connect, process_next, summary
