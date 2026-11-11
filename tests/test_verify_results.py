@@ -28,3 +28,30 @@ def test_mismatch_or_non_success_rejected(tmp_path,change):
     summary,junit=make_reports(tmp_path,passed=passed,**params)
     with pytest.raises(ValueError):
         verify(summary,junit)
+
+@pytest.mark.parametrize("field,value", [
+    ("tests", -1), ("failures", -1), ("errors", -1), ("skipped", -1)
+])
+def test_reject_negative_junit_counts(tmp_path, field, value):
+    summary, junit = make_reports(tmp_path)
+    tree = ET.parse(junit)
+    tree.getroot().find("testsuite").set(field, str(value))
+    tree.write(junit, encoding="unicode")
+    with pytest.raises(ValueError):
+        verify(summary, junit)
+
+
+def test_reject_boolean_json_count(tmp_path):
+    summary, junit = make_reports(tmp_path)
+    data = json.loads(summary.read_text(encoding="utf-8"))
+    data["passed"] = True
+    summary.write_text(json.dumps(data), encoding="utf-8")
+    with pytest.raises(ValueError):
+        verify(summary, junit)
+
+
+def test_reject_invalid_junit_root(tmp_path):
+    summary, junit = make_reports(tmp_path)
+    junit.write_text("<report/>", encoding="utf-8")
+    with pytest.raises(ValueError):
+        verify(summary, junit)
